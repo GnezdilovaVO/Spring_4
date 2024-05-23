@@ -2,6 +2,8 @@ package com.example.ex_4_hw.controller;
 
 import com.example.ex_4_hw.model.Cat;
 import com.example.ex_4_hw.repository.CatRepository;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @AllArgsConstructor
 public class CatController {
     private final CatRepository catRepository;
+    private final Counter addCatCounter = Metrics.counter("add_cat_count");
     @GetMapping("/cats")
     public String getCat(Model model){
         model.addAttribute("cats", catRepository.getCats());
@@ -21,6 +24,7 @@ public class CatController {
     public String addCat(Cat c, Model model){
         catRepository.addCat(c);
         model.addAttribute("cats", catRepository.getCats());
+        addCatCounter.increment();
         return "cats";
     }
 }
